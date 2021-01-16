@@ -5,6 +5,8 @@
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageProjectUrl>https://github.com/aaasoft/Quick.Build</PackageProjectUrl>
     <RepositoryUrl>https://github.com/aaasoft/Quick.Build</RepositoryUrl>
+    <Version>1.0.1</Version>
+    <Description>A lot of utils for build.</Description>
   </PropertyGroup>
 
   <ItemGroup>

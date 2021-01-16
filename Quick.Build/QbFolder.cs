@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Reflection;
 using System.Text;
 
 namespace Quick.Build
@@ -11,30 +12,25 @@ namespace Quick.Build
     public static class QbFolder
     {
         /// <summary>
+        /// 获取当前程序目录
+        /// </summary>
+        /// <returns></returns>
+        public static string GetAppFolder()
+        {
+            return Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
+        }
+
+        /// <summary>
         /// 删除文件夹
         /// </summary>
         /// <param name="folder">文件夹名称</param>
-        /// <param name="searchPattern">搜索表达示</param>
-        /// <param name="searchOption">搜索选项</param>
         public static void Delete(
-            string folder,
-            string searchPattern = null,
-            SearchOption searchOption = SearchOption.AllDirectories)
+            string folder)
         {
             var dir = new DirectoryInfo(folder);
             if (!dir.Exists)
                 return;
-            //如果没有设置搜索参数，则删除指定的文件夹
-            if (string.IsNullOrEmpty(searchPattern))
-            {
-                dir.Delete(true);
-                return;
-            }
-            var subDirs = dir.GetDirectories(searchPattern, searchOption);
-            if (subDirs == null || subDirs.Length == 0)
-                return;
-            foreach (var subDir in subDirs)
-                subDir.Delete(true);
+            dir.Delete(true);
         }
 
         /// <summary>

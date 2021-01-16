@@ -38,6 +38,17 @@ namespace Quick.Build
         }
 
         /// <summary>
+        /// 删除文件
+        /// </summary>
+        /// <param name="file">文件名</param>
+        public static void Delete(string file)
+        {
+            if (!File.Exists(file))
+                return;
+            File.Delete(file);
+        }
+
+        /// <summary>
         /// 删除指定的文件
         /// </summary>
         /// <param name="folder">文件夹</param>
