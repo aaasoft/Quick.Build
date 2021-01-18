@@ -17,7 +17,7 @@ namespace _build
             var baseFolder = Environment.CurrentDirectory;
 
             Console.WriteLine("----------------------------------");
-            Console.WriteLine("  欢迎使用Quick.Build编译脚本");
+            Console.WriteLine($"  欢迎使用{QbJson.ReadString("_build/test.json", "Name")}编译脚本");
             Console.WriteLine("----------------------------------");
             Console.WriteLine();
             string selectedKey = string.Empty;

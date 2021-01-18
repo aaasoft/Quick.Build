@@ -21,7 +21,7 @@ namespace Quick.Build
             var content = File.ReadAllText(file);
             var jobj = JObject.Parse(content);
             var property = jobj.Property(propertyName);
-            return property.Value<T>();
+            return property.Value.ToObject<T>();
         }
         /// <summary>
         /// 读取文件中属性的值(String)
