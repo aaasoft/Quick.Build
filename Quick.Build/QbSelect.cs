@@ -10,6 +10,35 @@ namespace Quick.Build
     public static class QbSelect
     {
         /// <summary>
+        /// 输入选择
+        /// </summary>
+        /// <param name="items"></param>
+        /// <returns></returns>
+        public static string InputSelect(KeyValuePair<string, string>[] items, string inputText = ">", string template = "[{0}] {1}")
+        {
+            for (var i = 0; i < items.Length; i++)
+            {
+                var item = items[i];
+                Console.WriteLine(string.Format(template, i + 1, item.Value));
+            }
+            Console.Write(inputText);
+
+            int selectedIndex = 0;
+            while (true)
+            {
+                var key = Console.ReadLine();
+                if (int.TryParse(key, out selectedIndex))
+                {
+                    selectedIndex--;
+                    if (selectedIndex >= 0 && selectedIndex < items.Length)
+                        break;
+                }
+                Console.Write(inputText);
+            }
+            return items[selectedIndex].Key;
+        }
+
+        /// <summary>
         /// 方向剪头键选择
         /// </summary>
         /// <param name="items"></param>

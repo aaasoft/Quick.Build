@@ -22,8 +22,8 @@ namespace _build
             Console.WriteLine();
             string selectedKey = string.Empty;
 
-            Console.WriteLine("普通选择测试，请选择：");
-            selectedKey = QbSelect.ArrowSelect(
+            Console.WriteLine("输入选择测试，请选择：");
+            selectedKey = QbSelect.InputSelect(
                 AppDomain.CurrentDomain.GetAssemblies()
                 .ToDictionary(t => t.GetName().Name, t => t.GetName().Name)
                 .ToArray());
