@@ -27,14 +27,15 @@ namespace Quick.Build
         /// </summary>
         /// <param name="srcFile">源文件</param>
         /// <param name="destFile">目的文件</param>
-        public static void Copy(string srcFile, string destFile)
+        /// <param name="overwrite">是否覆盖</param>
+        public static void Copy(string srcFile, string destFile, bool overwrite = false)
         {
             if (!File.Exists(srcFile))
                 return;
             var dir = Path.GetDirectoryName(destFile);
             if (!Directory.Exists(dir))
                 Directory.CreateDirectory(dir);
-            File.Copy(srcFile, destFile);
+            File.Copy(srcFile, destFile, overwrite);
         }
 
         /// <summary>
@@ -61,6 +62,22 @@ namespace Quick.Build
                 return;
             foreach (var file in files)
                 file.Delete();
+        }
+
+        /// <summary>
+        /// 复制指定的文件
+        /// </summary>
+        /// <param name="srcFolder">源文件夹</param>
+        /// <param name="destFolder">目的文件夹</param>
+        /// <param name="searchPattern">搜索表达示</param>
+        /// <param name="overwrite">是否覆盖</param>
+        public static void CopyFiles(string srcFolder, string destFolder, string searchPattern, bool overwrite = false)
+        {
+            var files = QbFolder.SearchFiles(srcFolder, searchPattern);
+            if (files == null || files.Length == 0)
+                return;
+            foreach (var file in files)
+                file.CopyTo(Path.Combine(destFolder, file.Name), overwrite);
         }
     }
 }
