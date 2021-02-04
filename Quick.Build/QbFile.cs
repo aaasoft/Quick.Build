@@ -79,5 +79,54 @@ namespace Quick.Build
             foreach (var file in files)
                 file.CopyTo(Path.Combine(destFolder, file.Name), overwrite);
         }
+
+        /// <summary>
+        /// 读取文件中的一行文字
+        /// </summary>
+        /// <param name="path"></param>
+        /// <param name="lineIndex"></param>
+        /// <returns></returns>
+        public static string ReadLine(string path, int lineIndex)
+        {
+            return ReadLine(path, lineIndex, Encoding.UTF8);
+        }
+
+        /// <summary>
+        /// 读取文件中的一行文字
+        /// </summary>
+        /// <param name="path"></param>
+        /// <param name="lineIndex"></param>
+        /// <param name="encoding"></param>
+        /// <returns></returns>
+        public static string ReadLine(string path, int lineIndex, Encoding encoding)
+        {
+            var lines = File.ReadAllLines(path, encoding);
+            return lines[lineIndex];
+        }
+
+        /// <summary>
+        /// 向文件中写入一行文字
+        /// </summary>
+        /// <param name="path"></param>
+        /// <param name="lineIndex"></param>
+        /// <param name="lineContent"></param>
+        public static void WriteLine(string path, int lineIndex, string lineContent)
+        {
+            WriteLine(path, lineIndex, lineContent, Encoding.UTF8);
+        }
+
+        /// <summary>
+        /// 向文件中写入一行文字
+        /// </summary>
+        /// <param name="path"></param>
+        /// <param name="lineIndex"></param>
+        /// <param name="lineContent"></param>
+        /// <param name="encoding"></param>
+        public static void WriteLine(string path, int lineIndex, string lineContent, Encoding encoding)
+        {
+            var lines = File.ReadAllLines(path, encoding);
+            lines[lineIndex] = lineContent;
+            File.WriteAllLines(path, lines, encoding);
+        }
     }
 }
