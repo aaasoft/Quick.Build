@@ -38,9 +38,11 @@ namespace Quick.Build
         /// </summary>
         /// <param name="srcFolder">源文件夹</param>
         /// <param name="destFolder">目的文件夹</param>
+        /// <param name="overwrite">是否覆盖</param>
         public static void Copy(
             string srcFolder,
-            string destFolder)
+            string destFolder,
+            bool overwrite = false)
         {
             var srcDir = new DirectoryInfo(srcFolder);
             if (!srcDir.Exists)
@@ -51,11 +53,11 @@ namespace Quick.Build
                 destDir.Create();
             //先复制文件
             foreach (var file in srcDir.GetFiles())
-                file.CopyTo(Path.Combine(destDir.FullName, file.Name));
+                file.CopyTo(Path.Combine(destDir.FullName, file.Name), overwrite);
 
             //再复制目录            
             foreach (var dir in srcDir.GetDirectories())
-                Copy(dir.FullName, Path.Combine(destDir.FullName, dir.Name));
+                Copy(dir.FullName, Path.Combine(destDir.FullName, dir.Name), overwrite);
         }
 
         /// <summary>
