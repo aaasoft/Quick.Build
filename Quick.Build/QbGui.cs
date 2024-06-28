@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Runtime.InteropServices;
 
 namespace Quick.Build
 {
@@ -7,9 +6,13 @@ namespace Quick.Build
     {
         public static void OpenFolder(string folder)
         {
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            if (OperatingSystem.IsWindows())
             {
                 QbCommand.Run("Explorer", folder);
+            }
+            else if (OperatingSystem.IsMacOS())
+            {
+                QbCommand.Run("open", folder);
             }
             else
             {
