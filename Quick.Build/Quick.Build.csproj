@@ -5,13 +5,13 @@
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageProjectUrl>https://github.com/aaasoft/Quick.Build</PackageProjectUrl>
     <RepositoryUrl>https://github.com/aaasoft/Quick.Build</RepositoryUrl>
-    <Version>1.0.10</Version>
+    <Version>1.0.11</Version>
     <Description>A lot of utils for build.</Description>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-    <PackageReference Include="SimpleExec" Version="6.4.0" />
+    <PackageReference Include="SimpleExec" Version="12.0.0" />
   </ItemGroup>
 
 </Project>

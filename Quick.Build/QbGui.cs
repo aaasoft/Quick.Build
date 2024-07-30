@@ -8,7 +8,7 @@ namespace Quick.Build
         {
             if (OperatingSystem.IsWindows())
             {
-                QbCommand.Run("Explorer", folder);
+                QbCommand.Run("explorer", folder, handleExitCode: ret => true);
             }
             else if (OperatingSystem.IsMacOS())
             {
