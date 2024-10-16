@@ -64,12 +64,6 @@ public static class QbNet
             {
                 while (true)
                 {
-                    var ret = await ns.ReadAsync(buffer, 0, buffer.Length, cancellationToken);
-                    readTotalCount += ret;
-                    fs.Write(buffer, 0, ret);
-                    if (readTotalCount >= totalFileSize)
-                        break;
-
                     if ((DateTime.Now - lastDisplayTime).TotalSeconds > 0.5 && stopwatch.ElapsedMilliseconds > 0)
                     {
                         StringBuilder sb = new StringBuilder();
@@ -85,6 +79,11 @@ public static class QbNet
                         });
                         lastDisplayTime = DateTime.Now;
                     }
+                    var ret = await ns.ReadAsync(buffer, 0, buffer.Length, cancellationToken);
+                    readTotalCount += ret;
+                    fs.Write(buffer, 0, ret);
+                    if (readTotalCount >= totalFileSize)
+                        break;
                 }
             }
             stopwatch.Stop();
