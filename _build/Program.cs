@@ -10,10 +10,12 @@ if (appFolder == Environment.CurrentDirectory)
     Environment.CurrentDirectory = Path.GetFullPath("../../../../");
 var baseFolder = Environment.CurrentDirectory;
 
+QbJson.WriteString("_build/test.json", "Name", "Quick.Build_" + Guid.NewGuid().ToString("N"));
 Console.WriteLine("----------------------------------");
 Console.WriteLine($"  欢迎使用{QbJson.ReadString("_build/test.json", "Name")}编译脚本");
 Console.WriteLine("----------------------------------");
 Console.WriteLine();
+QbJson.WriteString("_build/test.json", "Name", "Quick.Build");
 string selectedKey = string.Empty;
 
 while (true)

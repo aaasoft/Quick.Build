@@ -1,6 +1,5 @@
-﻿using Newtonsoft.Json.Linq;
-using System;
-using System.IO;
+﻿using System.IO;
+using System.Text.Json.Nodes;
 
 namespace Quick.Build
 {
@@ -19,9 +18,13 @@ namespace Quick.Build
         public static T Read<T>(string file, string propertyName)
         {
             var content = File.ReadAllText(file);
-            var jobj = JObject.Parse(content);
-            var property = jobj.Property(propertyName);
-            return property.Value.ToObject<T>();
+            var jObj = JsonNode.Parse(content).AsObject();
+            if (jObj.ContainsKey(propertyName))
+            {
+                if (jObj.TryGetPropertyValue(propertyName, out var jsonNode))
+                    return jsonNode.GetValue<T>();
+            }
+            return default;
         }
         /// <summary>
         /// 读取文件中属性的值(String)
@@ -74,15 +77,10 @@ namespace Quick.Build
         public static void Write<T>(string file, string propertyName, T value)
         {
             var content = File.ReadAllText(file);
-            var jobj = JObject.Parse(content);
-            var property = jobj.Property(propertyName);
-            if (property == null)
-            {
-                jobj.Add(propertyName, null);
-                property = jobj.Property(propertyName);
-            }
-            property.Value = JToken.FromObject(value);
-            File.WriteAllText(file, jobj.ToString(Newtonsoft.Json.Formatting.Indented));
+            var jObj = JsonNode.Parse(content).AsObject();
+            jObj[propertyName] = JsonValue.Create(value);
+            var json = jObj.ToString();
+            File.WriteAllText(file, json);
         }
 
         /// <summary>

@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 
 namespace Quick.Build
 {
@@ -49,11 +52,35 @@ namespace Quick.Build
             ConsoleColor? notSelectedForegroundColor = null,
             ConsoleColor? notSelectedBackgroundColor = null)
         {
+            var isAdd = false;
             var selectIndex = 0;
             List<int> selectedIndexList = new List<int>();
             while (true)
             {
-                for (var i = 0; i < items.Length; i++)
+                var itemCount = items.Length;
+                var windowHeight = Console.WindowHeight - 1;
+                var startIndex = 0;
+                var endIndex = itemCount - 1;
+                //如果选择的条目数量大于了窗口行数
+                if (itemCount > windowHeight)
+                {
+                    Console.Clear();
+                    if (isAdd)
+                    {
+                        endIndex = selectIndex + (windowHeight/2);
+                        if (endIndex >= itemCount)
+                            endIndex = itemCount - 1;
+                        startIndex = Math.Max(endIndex - windowHeight + 1, startIndex);
+                    }
+                    else
+                    {
+                        startIndex = selectIndex - (windowHeight/2);
+                        if (startIndex < 0)
+                            startIndex = 0;
+                        endIndex = Math.Min(startIndex + windowHeight - 1, endIndex);
+                    }
+                }
+                for (var i = startIndex; i <= endIndex; i++)
                 {
                     //控制台之前的前景色
                     var preForegroundColor = Console.ForegroundColor;
@@ -89,6 +116,8 @@ namespace Quick.Build
                         Console.BackgroundColor = preBackColor;
                     Console.WriteLine();
                 }
+                if (Console.IsInputRedirected)
+                    throw new IOException("Console's input is redirected!");
                 var key = Console.ReadKey();
                 //清空输入
                 Console.CursorLeft = 0;
@@ -98,11 +127,13 @@ namespace Quick.Build
                 switch (key.Key)
                 {
                     case ConsoleKey.UpArrow:
+                        isAdd = false;
                         selectIndex--;
                         if (selectIndex < 0)
                             selectIndex = 0;
                         break;
                     case ConsoleKey.DownArrow:
+                        isAdd = true;
                         selectIndex++;
                         if (selectIndex >= items.Length)
                             selectIndex = items.Length - 1;
@@ -117,7 +148,10 @@ namespace Quick.Build
                 if (key.Key == ConsoleKey.Enter)
                     break;
                 Console.CursorLeft = 0;
-                Console.CursorTop -= items.Length;
+                var currentCursorTop = Console.CursorTop - itemCount;
+                if (currentCursorTop < 0)
+                    currentCursorTop = 0;
+                Console.CursorTop = currentCursorTop;
             }
             return selectedIndexList.Select(t => items[t].Key).ToArray();
         }
@@ -142,10 +176,34 @@ namespace Quick.Build
             ConsoleColor? notSelectedForegroundColor = null,
             ConsoleColor? notSelectedBackgroundColor = null)
         {
+            var isAdd = false;
             var selectedIndex = 0;
             while (true)
             {
-                for (var i = 0; i < items.Length; i++)
+                var itemCount = items.Length;
+                var windowHeight = Console.WindowHeight - 1;
+                var startIndex = 0;
+                var endIndex = itemCount - 1;
+                //如果选择的条目数量大于了窗口行数
+                if (itemCount > windowHeight)
+                {
+                    Console.Clear();
+                    if (isAdd)
+                    {
+                        endIndex = selectedIndex + (windowHeight/2);
+                        if (endIndex >= itemCount)
+                            endIndex = itemCount - 1;
+                        startIndex = Math.Max(endIndex - windowHeight + 1, startIndex);
+                    }
+                    else
+                    {
+                        startIndex = selectedIndex - (windowHeight/2);
+                        if (startIndex < 0)
+                            startIndex = 0;
+                        endIndex = Math.Min(startIndex + windowHeight - 1, endIndex);
+                    }
+                }
+                for (var i = startIndex; i <= endIndex; i++)
                 {
                     //控制台之前的前景色
                     var preForegroundColor = Console.ForegroundColor;
@@ -177,6 +235,8 @@ namespace Quick.Build
                         Console.BackgroundColor = preBackColor;
                     Console.WriteLine();
                 }
+                if (Console.IsInputRedirected)
+                    throw new IOException("Console's input is redirected!");
                 var key = Console.ReadKey();
                 //清空输入
                 Console.CursorLeft = 0;
@@ -186,20 +246,25 @@ namespace Quick.Build
                 switch (key.Key)
                 {
                     case ConsoleKey.UpArrow:
+                        isAdd = false;
                         selectedIndex--;
                         if (selectedIndex < 0)
                             selectedIndex = 0;
                         break;
                     case ConsoleKey.DownArrow:
+                        isAdd = true;
                         selectedIndex++;
-                        if (selectedIndex >= items.Length)
-                            selectedIndex = items.Length - 1;
+                        if (selectedIndex >= itemCount)
+                            selectedIndex = itemCount - 1;
                         break;
                 }
                 if (key.Key == ConsoleKey.Enter)
                     break;
                 Console.CursorLeft = 0;
-                Console.CursorTop -= items.Length;
+                var currentCursorTop = Console.CursorTop - itemCount;
+                if (currentCursorTop < 0)
+                    currentCursorTop = 0;
+                Console.CursorTop = currentCursorTop;
             }
             return items[selectedIndex].Key;
         }
