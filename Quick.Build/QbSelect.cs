@@ -58,7 +58,7 @@ namespace Quick.Build
             while (true)
             {
                 var itemCount = items.Length;
-                var windowHeight = Console.WindowHeight - 1;
+                var windowHeight = Console.WindowHeight;
                 var startIndex = 0;
                 var endIndex = itemCount - 1;
                 //如果选择的条目数量大于了窗口行数
@@ -114,7 +114,10 @@ namespace Quick.Build
                         Console.ForegroundColor = preForegroundColor;
                     if (Console.BackgroundColor != preBackColor)
                         Console.BackgroundColor = preBackColor;
-                    Console.WriteLine();
+                    if (i < endIndex)
+                        Console.WriteLine();
+                    else
+                        Console.CursorLeft = Console.WindowWidth;
                 }
                 if (Console.IsInputRedirected)
                     throw new IOException("Console's input is redirected!");
@@ -176,12 +179,12 @@ namespace Quick.Build
             ConsoleColor? notSelectedForegroundColor = null,
             ConsoleColor? notSelectedBackgroundColor = null)
         {
-            var isAdd = false;
             var selectedIndex = 0;
+            var isAdd = false;
             while (true)
             {
                 var itemCount = items.Length;
-                var windowHeight = Console.WindowHeight - 1;
+                var windowHeight = Console.WindowHeight;
                 var startIndex = 0;
                 var endIndex = itemCount - 1;
                 //如果选择的条目数量大于了窗口行数
@@ -190,14 +193,14 @@ namespace Quick.Build
                     Console.Clear();
                     if (isAdd)
                     {
-                        endIndex = selectedIndex + (windowHeight/2);
+                        endIndex = selectedIndex + (windowHeight / 2);
                         if (endIndex >= itemCount)
                             endIndex = itemCount - 1;
                         startIndex = Math.Max(endIndex - windowHeight + 1, startIndex);
                     }
                     else
                     {
-                        startIndex = selectedIndex - (windowHeight/2);
+                        startIndex = selectedIndex - (windowHeight / 2);
                         if (startIndex < 0)
                             startIndex = 0;
                         endIndex = Math.Min(startIndex + windowHeight - 1, endIndex);
@@ -233,7 +236,10 @@ namespace Quick.Build
                         Console.ForegroundColor = preForegroundColor;
                     if (Console.BackgroundColor != preBackColor)
                         Console.BackgroundColor = preBackColor;
-                    Console.WriteLine();
+                    if (i < endIndex)
+                        Console.WriteLine();
+                    else
+                        Console.CursorLeft = Console.WindowWidth;
                 }
                 if (Console.IsInputRedirected)
                     throw new IOException("Console's input is redirected!");
