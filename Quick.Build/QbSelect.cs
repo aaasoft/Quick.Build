@@ -146,7 +146,7 @@ namespace Quick.Build
                 if (key.Key == ConsoleKey.Enter)
                     break;
                 Console.CursorLeft = 0;
-                var currentCursorTop = Console.CursorTop - itemCount;
+                var currentCursorTop = Console.CursorTop - itemCount + 1;
                 if (currentCursorTop < 0)
                     currentCursorTop = 0;
                 Console.CursorTop = currentCursorTop;
@@ -257,7 +257,7 @@ namespace Quick.Build
                 if (key.Key == ConsoleKey.Enter)
                     break;
                 Console.CursorLeft = 0;
-                var currentCursorTop = Console.CursorTop - itemCount;
+                var currentCursorTop = Console.CursorTop - itemCount + 1;
                 if (currentCursorTop < 0)
                     currentCursorTop = 0;
                 Console.CursorTop = currentCursorTop;
