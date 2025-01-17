@@ -52,8 +52,9 @@ namespace Quick.Build
             ConsoleColor? notSelectedForegroundColor = null,
             ConsoleColor? notSelectedBackgroundColor = null)
         {
-            var isAdd = false;
-            var selectIndex = 0;
+            var selectedIndex = 0;
+            var displayWindowStartIndex = 0;
+
             List<int> selectedIndexList = new List<int>();
             while (true)
             {
@@ -65,20 +66,16 @@ namespace Quick.Build
                 if (itemCount > windowHeight)
                 {
                     Console.Clear();
-                    if (isAdd)
+                    if (selectedIndex < displayWindowStartIndex)
                     {
-                        endIndex = selectIndex + (windowHeight/2);
-                        if (endIndex >= itemCount)
-                            endIndex = itemCount - 1;
-                        startIndex = Math.Max(endIndex - windowHeight + 1, startIndex);
+                        displayWindowStartIndex--;
                     }
-                    else
+                    else if (selectedIndex > displayWindowStartIndex + windowHeight - 1)
                     {
-                        startIndex = selectIndex - (windowHeight/2);
-                        if (startIndex < 0)
-                            startIndex = 0;
-                        endIndex = Math.Min(startIndex + windowHeight - 1, endIndex);
+                        displayWindowStartIndex++;
                     }
+                    startIndex = displayWindowStartIndex;
+                    endIndex = Math.Min(endIndex, displayWindowStartIndex + windowHeight - 1);
                 }
                 for (var i = startIndex; i <= endIndex; i++)
                 {
@@ -87,7 +84,7 @@ namespace Quick.Build
                     //控制台之前的背景色
                     var preBackColor = Console.BackgroundColor;
 
-                    if (i == selectIndex)
+                    if (i == selectedIndex)
                         Console.Write(selectPrefix);
                     else
                         Console.Write(notSelectPrefix);
@@ -130,22 +127,20 @@ namespace Quick.Build
                 switch (key.Key)
                 {
                     case ConsoleKey.UpArrow:
-                        isAdd = false;
-                        selectIndex--;
-                        if (selectIndex < 0)
-                            selectIndex = 0;
+                        selectedIndex--;
+                        if (selectedIndex < 0)
+                            selectedIndex = 0;
                         break;
                     case ConsoleKey.DownArrow:
-                        isAdd = true;
-                        selectIndex++;
-                        if (selectIndex >= items.Length)
-                            selectIndex = items.Length - 1;
+                        selectedIndex++;
+                        if (selectedIndex >= items.Length)
+                            selectedIndex = items.Length - 1;
                         break;
                     case ConsoleKey.Spacebar:
-                        if (selectedIndexList.Contains(selectIndex))
-                            selectedIndexList.Remove(selectIndex);
+                        if (selectedIndexList.Contains(selectedIndex))
+                            selectedIndexList.Remove(selectedIndex);
                         else
-                            selectedIndexList.Add(selectIndex);
+                            selectedIndexList.Add(selectedIndex);
                         break;
                 }
                 if (key.Key == ConsoleKey.Enter)
@@ -180,7 +175,8 @@ namespace Quick.Build
             ConsoleColor? notSelectedBackgroundColor = null)
         {
             var selectedIndex = 0;
-            var isAdd = false;
+            var displayWindowStartIndex = 0;
+            
             while (true)
             {
                 var itemCount = items.Length;
@@ -191,20 +187,16 @@ namespace Quick.Build
                 if (itemCount > windowHeight)
                 {
                     Console.Clear();
-                    if (isAdd)
+                    if (selectedIndex < displayWindowStartIndex)
                     {
-                        endIndex = selectedIndex + (windowHeight / 2);
-                        if (endIndex >= itemCount)
-                            endIndex = itemCount - 1;
-                        startIndex = Math.Max(endIndex - windowHeight + 1, startIndex);
+                        displayWindowStartIndex--;
                     }
-                    else
+                    else if (selectedIndex > displayWindowStartIndex + windowHeight - 1)
                     {
-                        startIndex = selectedIndex - (windowHeight / 2);
-                        if (startIndex < 0)
-                            startIndex = 0;
-                        endIndex = Math.Min(startIndex + windowHeight - 1, endIndex);
+                        displayWindowStartIndex++;
                     }
+                    startIndex = displayWindowStartIndex;
+                    endIndex = Math.Min(endIndex, displayWindowStartIndex + windowHeight - 1);
                 }
                 for (var i = startIndex; i <= endIndex; i++)
                 {
@@ -252,13 +244,11 @@ namespace Quick.Build
                 switch (key.Key)
                 {
                     case ConsoleKey.UpArrow:
-                        isAdd = false;
                         selectedIndex--;
                         if (selectedIndex < 0)
                             selectedIndex = 0;
                         break;
                     case ConsoleKey.DownArrow:
-                        isAdd = true;
                         selectedIndex++;
                         if (selectedIndex >= itemCount)
                             selectedIndex = itemCount - 1;
