@@ -151,6 +151,7 @@ namespace Quick.Build
                     currentCursorTop = 0;
                 Console.CursorTop = currentCursorTop;
             }
+            Console.WriteLine();
             return selectedIndexList.Select(t => items[t].Key).ToArray();
         }
 
@@ -262,6 +263,7 @@ namespace Quick.Build
                     currentCursorTop = 0;
                 Console.CursorTop = currentCursorTop;
             }
+            Console.WriteLine();
             return items[selectedIndex].Key;
         }
     }
