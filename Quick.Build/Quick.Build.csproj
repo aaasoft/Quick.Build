@@ -4,7 +4,7 @@
     <TargetFramework>net8.0</TargetFramework>
     <PackageProjectUrl>https://github.com/aaasoft/Quick.Build</PackageProjectUrl>
     <RepositoryUrl>https://github.com/aaasoft/Quick.Build</RepositoryUrl>
-    <Version>1.0.16</Version>
+    <Version>1.0.17</Version>
     <Description>A lot of utils for build.</Description>
   </PropertyGroup>
 
