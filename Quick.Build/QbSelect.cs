@@ -232,7 +232,7 @@ namespace Quick.Build
                     if (i < endIndex)
                         Console.WriteLine();
                     else
-                        Console.CursorLeft = Console.WindowWidth;
+                        Console.CursorLeft = Console.WindowWidth - 1;
                 }
                 if (Console.IsInputRedirected)
                     throw new IOException("Console's input is redirected!");
