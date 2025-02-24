@@ -114,7 +114,7 @@ namespace Quick.Build
                     if (i < endIndex)
                         Console.WriteLine();
                     else
-                        Console.CursorLeft = Console.WindowWidth;
+                        Console.CursorLeft = Console.WindowWidth - 2;
                 }
                 if (Console.IsInputRedirected)
                     throw new IOException("Console's input is redirected!");
@@ -232,7 +232,7 @@ namespace Quick.Build
                     if (i < endIndex)
                         Console.WriteLine();
                     else
-                        Console.CursorLeft = Console.WindowWidth - 1;
+                        Console.CursorLeft = Console.WindowWidth - 2;
                 }
                 if (Console.IsInputRedirected)
                     throw new IOException("Console's input is redirected!");
@@ -258,9 +258,7 @@ namespace Quick.Build
                 if (key.Key == ConsoleKey.Enter)
                     break;
                 Console.CursorLeft = 0;
-                var currentCursorTop = Console.CursorTop - itemCount;
-                if (!OperatingSystem.IsWindows())
-                    currentCursorTop++;
+                var currentCursorTop = Console.CursorTop - itemCount + 1;
                 if (currentCursorTop < 0)
                     currentCursorTop = 0;
                 Console.CursorTop = currentCursorTop;
