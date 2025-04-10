@@ -1,8 +1,4 @@
 ﻿using Quick.Build;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 
 //准备目录变量
 var appFolder = QbFolder.GetAppFolder();

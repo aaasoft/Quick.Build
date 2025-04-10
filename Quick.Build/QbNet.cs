@@ -34,9 +34,13 @@ public static class QbNet
         httpClient.DefaultRequestHeaders.Accept.Add(MediaTypeWithQualityHeaderValue.Parse("image/apng"));
         httpClient.DefaultRequestHeaders.Accept.Add(MediaTypeWithQualityHeaderValue.Parse("*/*;q=0.8"));
         httpClient.DefaultRequestHeaders.Accept.Add(MediaTypeWithQualityHeaderValue.Parse("application/signed-exchange;v=b3;q=0.7"));
-        httpClient.DefaultRequestHeaders.AcceptEncoding.Add(StringWithQualityHeaderValue.Parse("*"));
+        httpClient.DefaultRequestHeaders.AcceptEncoding.Add(StringWithQualityHeaderValue.Parse("gzip"));
+        httpClient.DefaultRequestHeaders.AcceptEncoding.Add(StringWithQualityHeaderValue.Parse("deflate"));
+        httpClient.DefaultRequestHeaders.AcceptEncoding.Add(StringWithQualityHeaderValue.Parse("br"));
+        httpClient.DefaultRequestHeaders.AcceptEncoding.Add(StringWithQualityHeaderValue.Parse("zstd"));
         httpClient.DefaultRequestHeaders.AcceptLanguage.Add(StringWithQualityHeaderValue.Parse("en-US"));
         httpClient.DefaultRequestHeaders.AcceptLanguage.Add(StringWithQualityHeaderValue.Parse("en;q=0.9"));
+        httpClient.DefaultRequestHeaders.Connection.Add("keep-alive");
         httpClient.DefaultRequestHeaders.Add("Upgrade-Insecure-Requests", "1");
         httpClient.DefaultRequestHeaders.UserAgent.Add(ProductInfoHeaderValue.Parse("Mozilla/5.0"));
         httpClient.DefaultRequestHeaders.UserAgent.Add(ProductInfoHeaderValue.Parse("(Windows NT 10.0; Win64; x64)"));
@@ -57,32 +61,37 @@ public static class QbNet
             var totalFileSize = rep.Content.Headers.ContentLength.Value;
             var lastDisplayTime = DateTime.MinValue;
             var readTotalCount = 0;
-            var buffer = new byte[10 * 1024];
+            var buffer = new byte[32 * 1024];
             var stopwatch = new Stopwatch();
             stopwatch.Start();
             using (var ns = rep.Content.ReadAsStream())
             {
                 while (true)
                 {
-                    if ((DateTime.Now - lastDisplayTime).TotalSeconds > 0.5 && stopwatch.ElapsedMilliseconds > 0)
-                    {
-                        StringBuilder sb = new StringBuilder();
-                        var speed = readTotalCount * 1D / stopwatch.ElapsedMilliseconds;
-                        var speed_long = Convert.ToInt64(speed * 1000);
-                        var remainingTime = TimeSpan.FromMilliseconds((totalFileSize - readTotalCount) / speed);
-                        transferProgressAction?.Invoke(new TransferProgress()
-                        {
-                            Current = readTotalCount,
-                            Total = totalFileSize,
-                            Speed = speed_long,
-                            RemainingTime = remainingTime
-                        });
-                        lastDisplayTime = DateTime.Now;
-                    }
                     var ret = await ns.ReadAsync(buffer, 0, buffer.Length, cancellationToken);
                     readTotalCount += ret;
                     fs.Write(buffer, 0, ret);
-                    if (readTotalCount >= totalFileSize)
+                    var isDownloadFinish = readTotalCount >= totalFileSize;
+                    if ((DateTime.Now - lastDisplayTime).TotalSeconds > 0.5 || isDownloadFinish)
+                    {
+                        var elapsedMilliseconds = stopwatch.ElapsedMilliseconds;
+                        if (elapsedMilliseconds > 0)
+                        {
+                            StringBuilder sb = new StringBuilder();
+                            var speed = readTotalCount * 1D / elapsedMilliseconds;
+                            var speed_long = Convert.ToInt64(speed * 1000);
+                            var remainingTime = TimeSpan.FromMilliseconds((totalFileSize - readTotalCount) / speed);
+                            transferProgressAction?.Invoke(new TransferProgress()
+                            {
+                                Current = readTotalCount,
+                                Total = totalFileSize,
+                                Speed = speed_long,
+                                RemainingTime = remainingTime
+                            });
+                            lastDisplayTime = DateTime.Now;
+                        }
+                    }
+                    if (isDownloadFinish)
                         break;
                 }
             }
