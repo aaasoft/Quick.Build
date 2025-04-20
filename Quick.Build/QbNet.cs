@@ -52,9 +52,14 @@ public static class QbNet
         return httpClient;
     }
 
-    public static async Task DownloadFile(string url, string file, CancellationToken cancellationToken, Action<TransferProgress> transferProgressAction = null)
+    public static Task DownloadFile(string url, string file, CancellationToken cancellationToken, Action<TransferProgress> transferProgressAction = null)
     {
         var httpClient = GetHttpClient();
+        return DownloadFile(httpClient, url, file, cancellationToken, transferProgressAction);
+    }
+
+    public static async Task DownloadFile(HttpClient httpClient, string url, string file, CancellationToken cancellationToken, Action<TransferProgress> transferProgressAction = null)
+    {
         using (var fs = File.OpenWrite(file))
         {
             var rep = await httpClient.GetAsync(url, HttpCompletionOption.ResponseHeadersRead);
