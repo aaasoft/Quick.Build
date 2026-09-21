@@ -52,106 +52,128 @@ namespace Quick.Build
             ConsoleColor? notSelectedForegroundColor = null,
             ConsoleColor? notSelectedBackgroundColor = null)
         {
-            var selectedIndex = 0;
-            var displayWindowStartIndex = 0;
-
             List<int> selectedIndexList = new List<int>();
-            while (true)
+            if (Console.IsOutputRedirected)
             {
-                var itemCount = items.Length;
-                var windowHeight = Console.WindowHeight;
-                var startIndex = 0;
-                var endIndex = itemCount - 1;
-                //如果选择的条目数量大于了窗口行数
-                if (itemCount > windowHeight)
+                while (true)
                 {
-                    Console.Clear();
-                    if (selectedIndex < displayWindowStartIndex)
+                    for (var i = 0; i < items.Length; i++)
+                        Console.WriteLine($"[{i}] {items[i].Value}");
+                    Console.Write(">");
+                    var line = Console.ReadLine();
+                    var selectedIndexs = line.Split([' ',','], StringSplitOptions.RemoveEmptyEntries);
+                    foreach(var t in selectedIndexs)
                     {
-                        displayWindowStartIndex--;
+                        if(!int.TryParse(t,out var selectedIndex))
+                            continue;
+                        if (selectedIndex < 0 || selectedIndex >= items.Length)
+                            continue;
+                        selectedIndexList.Add(selectedIndex);
                     }
-                    else if (selectedIndex > displayWindowStartIndex + windowHeight - 1)
-                    {
-                        displayWindowStartIndex++;
-                    }
-                    startIndex = displayWindowStartIndex;
-                    endIndex = Math.Min(endIndex, displayWindowStartIndex + windowHeight - 1);
-                }
-                for (var i = startIndex; i <= endIndex; i++)
-                {
-                    //控制台之前的前景色
-                    var preForegroundColor = Console.ForegroundColor;
-                    //控制台之前的背景色
-                    var preBackColor = Console.BackgroundColor;
-
-                    if (i == selectedIndex)
-                        Console.Write(selectPrefix);
-                    else
-                        Console.Write(notSelectPrefix);
-                    var item = items[i];
-                    if (selectedIndexList.Contains(i))
-                    {
-                        if (selectedForegroundColor != null)
-                            Console.ForegroundColor = selectedForegroundColor.Value;
-                        if (selectedBackgroundColor != null)
-                            Console.BackgroundColor = selectedBackgroundColor.Value;
-                        Console.Write(selectedPrefix);
-                    }
-                    else
-                    {
-                        if (notSelectedForegroundColor != null)
-                            Console.ForegroundColor = notSelectedForegroundColor.Value;
-                        if (notSelectedBackgroundColor != null)
-                            Console.BackgroundColor = notSelectedBackgroundColor.Value;
-                        Console.Write(notSelectedPrefix);
-                    }
-                    Console.Write(item.Value);
-                    //改变回原来的颜色
-                    if (Console.ForegroundColor != preForegroundColor)
-                        Console.ForegroundColor = preForegroundColor;
-                    if (Console.BackgroundColor != preBackColor)
-                        Console.BackgroundColor = preBackColor;
-                    if (i < endIndex)
-                        Console.WriteLine();
-                    else
-                        Console.CursorLeft = Console.WindowWidth - 2;
-                }
-                if (Console.IsInputRedirected)
-                    throw new IOException("Console's input is redirected!");
-                var key = Console.ReadKey();
-                //清空输入
-                Console.CursorLeft = 0;
-                Console.Write(" ");
-                Console.CursorLeft = 0;
-
-                switch (key.Key)
-                {
-                    case ConsoleKey.UpArrow:
-                        selectedIndex--;
-                        if (selectedIndex < 0)
-                            selectedIndex = 0;
-                        break;
-                    case ConsoleKey.DownArrow:
-                        selectedIndex++;
-                        if (selectedIndex >= items.Length)
-                            selectedIndex = items.Length - 1;
-                        break;
-                    case ConsoleKey.Spacebar:
-                        if (selectedIndexList.Contains(selectedIndex))
-                            selectedIndexList.Remove(selectedIndex);
-                        else
-                            selectedIndexList.Add(selectedIndex);
-                        break;
-                }
-                if (key.Key == ConsoleKey.Enter)
                     break;
-                Console.CursorLeft = 0;
-                var currentCursorTop = Console.CursorTop - itemCount + 1;
-                if (currentCursorTop < 0)
-                    currentCursorTop = 0;
-                Console.CursorTop = currentCursorTop;
+                }
             }
-            Console.WriteLine();
+            else
+            {
+                var selectedIndex = 0;
+                var displayWindowStartIndex = 0;
+                while (true)
+                {
+                    var itemCount = items.Length;
+                    var windowHeight = Console.WindowHeight;
+                    var startIndex = 0;
+                    var endIndex = itemCount - 1;
+                    //如果选择的条目数量大于了窗口行数
+                    if (itemCount > windowHeight)
+                    {
+                        Console.Clear();
+                        if (selectedIndex < displayWindowStartIndex)
+                        {
+                            displayWindowStartIndex--;
+                        }
+                        else if (selectedIndex > displayWindowStartIndex + windowHeight - 1)
+                        {
+                            displayWindowStartIndex++;
+                        }
+                        startIndex = displayWindowStartIndex;
+                        endIndex = Math.Min(endIndex, displayWindowStartIndex + windowHeight - 1);
+                    }
+                    for (var i = startIndex; i <= endIndex; i++)
+                    {
+                        //控制台之前的前景色
+                        var preForegroundColor = Console.ForegroundColor;
+                        //控制台之前的背景色
+                        var preBackColor = Console.BackgroundColor;
+
+                        if (i == selectedIndex)
+                            Console.Write(selectPrefix);
+                        else
+                            Console.Write(notSelectPrefix);
+                        var item = items[i];
+                        if (selectedIndexList.Contains(i))
+                        {
+                            if (selectedForegroundColor != null)
+                                Console.ForegroundColor = selectedForegroundColor.Value;
+                            if (selectedBackgroundColor != null)
+                                Console.BackgroundColor = selectedBackgroundColor.Value;
+                            Console.Write(selectedPrefix);
+                        }
+                        else
+                        {
+                            if (notSelectedForegroundColor != null)
+                                Console.ForegroundColor = notSelectedForegroundColor.Value;
+                            if (notSelectedBackgroundColor != null)
+                                Console.BackgroundColor = notSelectedBackgroundColor.Value;
+                            Console.Write(notSelectedPrefix);
+                        }
+                        Console.Write(item.Value);
+                        //改变回原来的颜色
+                        if (Console.ForegroundColor != preForegroundColor)
+                            Console.ForegroundColor = preForegroundColor;
+                        if (Console.BackgroundColor != preBackColor)
+                            Console.BackgroundColor = preBackColor;
+                        if (i < endIndex)
+                            Console.WriteLine();
+                        else
+                            Console.CursorLeft = Console.WindowWidth - 2;
+                    }
+                    if (Console.IsInputRedirected)
+                        throw new IOException("Console's input is redirected!");
+                    var key = Console.ReadKey();
+                    //清空输入
+                    Console.CursorLeft = 0;
+                    Console.Write(" ");
+                    Console.CursorLeft = 0;
+
+                    switch (key.Key)
+                    {
+                        case ConsoleKey.UpArrow:
+                            selectedIndex--;
+                            if (selectedIndex < 0)
+                                selectedIndex = 0;
+                            break;
+                        case ConsoleKey.DownArrow:
+                            selectedIndex++;
+                            if (selectedIndex >= items.Length)
+                                selectedIndex = items.Length - 1;
+                            break;
+                        case ConsoleKey.Spacebar:
+                            if (selectedIndexList.Contains(selectedIndex))
+                                selectedIndexList.Remove(selectedIndex);
+                            else
+                                selectedIndexList.Add(selectedIndex);
+                            break;
+                    }
+                    if (key.Key == ConsoleKey.Enter)
+                        break;
+                    Console.CursorLeft = 0;
+                    var currentCursorTop = Console.CursorTop - itemCount + 1;
+                    if (currentCursorTop < 0)
+                        currentCursorTop = 0;
+                    Console.CursorTop = currentCursorTop;
+                }
+                Console.WriteLine();
+            }
             return selectedIndexList.Select(t => items[t].Key).ToArray();
         }
 
@@ -177,93 +199,110 @@ namespace Quick.Build
         {
             var selectedIndex = 0;
             var displayWindowStartIndex = 0;
-            
-            while (true)
+            if (Console.IsOutputRedirected)
             {
-                var itemCount = items.Length;
-                var windowHeight = Console.WindowHeight;
-                var startIndex = 0;
-                var endIndex = itemCount - 1;
-                //如果选择的条目数量大于了窗口行数
-                if (itemCount > windowHeight)
+                while (true)
                 {
-                    Console.Clear();
-                    if (selectedIndex < displayWindowStartIndex)
-                    {
-                        displayWindowStartIndex--;
-                    }
-                    else if (selectedIndex > displayWindowStartIndex + windowHeight - 1)
-                    {
-                        displayWindowStartIndex++;
-                    }
-                    startIndex = displayWindowStartIndex;
-                    endIndex = Math.Min(endIndex, displayWindowStartIndex + windowHeight - 1);
-                }
-                for (var i = startIndex; i <= endIndex; i++)
-                {
-                    //控制台之前的前景色
-                    var preForegroundColor = Console.ForegroundColor;
-                    //控制台之前的背景色
-                    var preBackColor = Console.BackgroundColor;
-
-                    var item = items[i];
-                    if (i == selectedIndex)
-                    {
-                        if (selectedForegroundColor != null)
-                            Console.ForegroundColor = selectedForegroundColor.Value;
-                        if (selectedBackgroundColor != null)
-                            Console.BackgroundColor = selectedBackgroundColor.Value;
-                        Console.Write(selectedPrefix);
-                    }
-                    else
-                    {
-                        if (notSelectedForegroundColor != null)
-                            Console.ForegroundColor = notSelectedForegroundColor.Value;
-                        if (notSelectedBackgroundColor != null)
-                            Console.BackgroundColor = notSelectedBackgroundColor.Value;
-                        Console.Write(notSelectedPrefix);
-                    }
-                    Console.Write(item.Value);
-                    //改变回原来的颜色
-                    if (Console.ForegroundColor != preForegroundColor)
-                        Console.ForegroundColor = preForegroundColor;
-                    if (Console.BackgroundColor != preBackColor)
-                        Console.BackgroundColor = preBackColor;
-                    if (i < endIndex)
-                        Console.WriteLine();
-                    else
-                        Console.CursorLeft = Console.WindowWidth - 2;
-                }
-                if (Console.IsInputRedirected)
-                    throw new IOException("Console's input is redirected!");
-                var key = Console.ReadKey();
-                //清空输入
-                Console.CursorLeft = 0;
-                Console.Write(" ");
-                Console.CursorLeft = 0;
-
-                switch (key.Key)
-                {
-                    case ConsoleKey.UpArrow:
-                        selectedIndex--;
-                        if (selectedIndex < 0)
-                            selectedIndex = 0;
-                        break;
-                    case ConsoleKey.DownArrow:
-                        selectedIndex++;
-                        if (selectedIndex >= itemCount)
-                            selectedIndex = itemCount - 1;
-                        break;
-                }
-                if (key.Key == ConsoleKey.Enter)
+                    for (var i = 0; i < items.Length; i++)
+                        Console.WriteLine($"[{i}] {items[i].Value}");
+                    Console.Write(">");
+                    var line = Console.ReadLine();
+                    if (!int.TryParse(line, out selectedIndex))
+                        continue;
+                    if (selectedIndex < 0 || selectedIndex >= items.Length)
+                        continue;
                     break;
-                Console.CursorLeft = 0;
-                var currentCursorTop = Console.CursorTop - itemCount + 1;
-                if (currentCursorTop < 0)
-                    currentCursorTop = 0;
-                Console.CursorTop = currentCursorTop;
+                }
             }
-            Console.WriteLine();
+            else
+            {
+                while (true)
+                {
+                    var itemCount = items.Length;
+                    var windowHeight = Console.WindowHeight;
+                    var startIndex = 0;
+                    var endIndex = itemCount - 1;
+                    //如果选择的条目数量大于了窗口行数
+                    if (itemCount > windowHeight)
+                    {
+                        Console.Clear();
+                        if (selectedIndex < displayWindowStartIndex)
+                        {
+                            displayWindowStartIndex--;
+                        }
+                        else if (selectedIndex > displayWindowStartIndex + windowHeight - 1)
+                        {
+                            displayWindowStartIndex++;
+                        }
+                        startIndex = displayWindowStartIndex;
+                        endIndex = Math.Min(endIndex, displayWindowStartIndex + windowHeight - 1);
+                    }
+                    for (var i = startIndex; i <= endIndex; i++)
+                    {
+                        //控制台之前的前景色
+                        var preForegroundColor = Console.ForegroundColor;
+                        //控制台之前的背景色
+                        var preBackColor = Console.BackgroundColor;
+
+                        var item = items[i];
+                        if (i == selectedIndex)
+                        {
+                            if (selectedForegroundColor != null)
+                                Console.ForegroundColor = selectedForegroundColor.Value;
+                            if (selectedBackgroundColor != null)
+                                Console.BackgroundColor = selectedBackgroundColor.Value;
+                            Console.Write(selectedPrefix);
+                        }
+                        else
+                        {
+                            if (notSelectedForegroundColor != null)
+                                Console.ForegroundColor = notSelectedForegroundColor.Value;
+                            if (notSelectedBackgroundColor != null)
+                                Console.BackgroundColor = notSelectedBackgroundColor.Value;
+                            Console.Write(notSelectedPrefix);
+                        }
+                        Console.Write(item.Value);
+                        //改变回原来的颜色
+                        if (Console.ForegroundColor != preForegroundColor)
+                            Console.ForegroundColor = preForegroundColor;
+                        if (Console.BackgroundColor != preBackColor)
+                            Console.BackgroundColor = preBackColor;
+                        if (i < endIndex)
+                            Console.WriteLine();
+                        else
+                            Console.CursorLeft = Console.WindowWidth - 2;
+                    }
+                    if (Console.IsInputRedirected)
+                        throw new IOException("Console's input is redirected!");
+                    var key = Console.ReadKey();
+                    //清空输入
+                    Console.CursorLeft = 0;
+                    Console.Write(" ");
+                    Console.CursorLeft = 0;
+
+                    switch (key.Key)
+                    {
+                        case ConsoleKey.UpArrow:
+                            selectedIndex--;
+                            if (selectedIndex < 0)
+                                selectedIndex = 0;
+                            break;
+                        case ConsoleKey.DownArrow:
+                            selectedIndex++;
+                            if (selectedIndex >= itemCount)
+                                selectedIndex = itemCount - 1;
+                            break;
+                    }
+                    if (key.Key == ConsoleKey.Enter)
+                        break;
+                    Console.CursorLeft = 0;
+                    var currentCursorTop = Console.CursorTop - itemCount + 1;
+                    if (currentCursorTop < 0)
+                        currentCursorTop = 0;
+                    Console.CursorTop = currentCursorTop;
+                }
+                Console.WriteLine();
+            }
             return items[selectedIndex].Key;
         }
     }
