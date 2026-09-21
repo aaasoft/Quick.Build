@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="Quick.Build/Quick.Build.csproj" />
+  <Project Path="_build/_build.csproj" />
+</Solution>
