@@ -1,4 +1,5 @@
 ﻿using System;
+using static SimpleExec.Command;
 
 namespace Quick.Build
 {
@@ -8,15 +9,15 @@ namespace Quick.Build
         {
             if (OperatingSystem.IsWindows())
             {
-                QbCommand.Run("explorer", folder, handleExitCode: ret => true);
+                Run("explorer", folder, handleExitCode: ret => true);
             }
             else if (OperatingSystem.IsMacOS())
             {
-                QbCommand.Run("open", folder);
+                Run("open", folder);
             }
             else
             {
-                QbCommand.Run("xdg-open", folder);
+                Run("xdg-open", folder);
             }
         }
     }
