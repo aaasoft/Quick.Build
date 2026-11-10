@@ -5,8 +5,8 @@
     <ImplicitUsings>true</ImplicitUsings>
     <PackageProjectUrl>https://github.com/aaasoft/Quick.Build</PackageProjectUrl>
     <RepositoryUrl>https://github.com/aaasoft/Quick.Build</RepositoryUrl>
-    <Version>1.0.22</Version>
-    <Description>A lot of utils for build.</Description>
+    <Version>1.0.23</Version>
+    <Description>一组面向**构建脚本**的 .NET 小工具</Description>
     <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
 
