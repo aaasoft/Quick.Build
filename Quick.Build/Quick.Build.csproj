@@ -7,10 +7,15 @@
     <RepositoryUrl>https://github.com/aaasoft/Quick.Build</RepositoryUrl>
     <Version>1.0.22</Version>
     <Description>A lot of utils for build.</Description>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="SimpleExec" Version="13.1.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\README.md" Pack="true" PackagePath="\" />
   </ItemGroup>
 
 </Project>
