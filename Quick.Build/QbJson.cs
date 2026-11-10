@@ -8,6 +8,13 @@ namespace Quick.Build
     /// </summary>
     public static class QbJson
     {
+        public static JsonSerializerOptions DefaultJsonSerializerOptions { get; set; } = new()
+        {
+            WriteIndented = true,
+            DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull,
+            Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping
+        };
+
         /// <summary>
         /// 读取文件中属性的值
         /// </summary>
@@ -75,12 +82,12 @@ namespace Quick.Build
         /// <param name="propertyName"></param>
         /// <param name="value"></param>
         /// <param name="jsonSerializerOptions"></param>
-        public static void Write<T>(string file, string propertyName, T value, JsonSerializerOptions jsonSerializerOptions = null)
+        public static void Write<T>(string file, string propertyName, T value)
         {
             var content = File.ReadAllText(file);
             var jObj = JsonNode.Parse(content).AsObject();
             jObj[propertyName] = JsonValue.Create(value);
-            var json = jObj.ToJsonString(jsonSerializerOptions);
+            var json = jObj.ToJsonString(DefaultJsonSerializerOptions);
             File.WriteAllText(file, json);
         }
 
@@ -91,8 +98,8 @@ namespace Quick.Build
         /// <param name="propertyName"></param>
         /// <param name="value"></param>
         /// <param name="jsonSerializerOptions"></param>
-        public static void WriteString(string file, string propertyName, string value, JsonSerializerOptions jsonSerializerOptions = null)
-            => Write(file, propertyName, value, jsonSerializerOptions);
+        public static void WriteString(string file, string propertyName, string value)
+            => Write(file, propertyName, value);
         /// <summary>
         /// 将属性的值写入到文件中(Int32)
         /// </summary>
@@ -100,8 +107,8 @@ namespace Quick.Build
         /// <param name="propertyName"></param>
         /// <param name="value"></param>
         /// <param name="jsonSerializerOptions"></param>
-        public static void WriteInt32(string file, string propertyName, int value, JsonSerializerOptions jsonSerializerOptions = null)
-            => Write(file, propertyName, value, jsonSerializerOptions);
+        public static void WriteInt32(string file, string propertyName, int value)
+            => Write(file, propertyName, value);
         /// <summary>
         /// 将属性的值写入到文件中(Int64)
         /// </summary>
@@ -109,8 +116,8 @@ namespace Quick.Build
         /// <param name="propertyName"></param>
         /// <param name="value"></param>
         /// <param name="jsonSerializerOptions"></param>
-        public static void WriteInt64(string file, string propertyName, long value, JsonSerializerOptions jsonSerializerOptions = null)
-            => Write(file, propertyName, value, jsonSerializerOptions);
+        public static void WriteInt64(string file, string propertyName, long value)
+            => Write(file, propertyName, value);
         /// <summary>
         /// 将属性的值写入到文件中(Double)
         /// </summary>
@@ -118,8 +125,8 @@ namespace Quick.Build
         /// <param name="propertyName"></param>
         /// <param name="value"></param>
         /// <param name="jsonSerializerOptions"></param>
-        public static void WriteDouble(string file, string propertyName, double value, JsonSerializerOptions jsonSerializerOptions = null)
-            => Write(file, propertyName, value, jsonSerializerOptions);
+        public static void WriteDouble(string file, string propertyName, double value)
+            => Write(file, propertyName, value);
         /// <summary>
         /// 将属性的值写入到文件中(Boolean)
         /// </summary>
@@ -127,7 +134,7 @@ namespace Quick.Build
         /// <param name="propertyName"></param>
         /// <param name="value"></param>
         /// <param name="jsonSerializerOptions"></param>
-        public static void WriteBoolean(string file, string propertyName, bool value, JsonSerializerOptions jsonSerializerOptions = null)
-            => Write(file, propertyName, value, jsonSerializerOptions);
+        public static void WriteBoolean(string file, string propertyName, bool value)
+            => Write(file, propertyName, value);
     }
 }
