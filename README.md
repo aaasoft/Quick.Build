@@ -187,10 +187,6 @@ Quick.Build.slnx
 
 `_build` 同时充当 smoke test：菜单里的「输入选择 / 多项选择 / 高亮选择 / 反色选择」四项覆盖了 `QbSelect` 的三条路径与颜色参数，顺带验证 `QbFolder.GetAppFolder()` 的目录定位与 `QbJson` 的键盘输入落盘。
 
-## 版本
-
-当前 `1.0.22`。类库目标框架 `net8.0`，示例工程 `net10.0`。
-
 ## License
 
 [MIT](https://github.com/aaasoft/Quick.Build/blob/master/LICENSE) © 2021 张鹏
