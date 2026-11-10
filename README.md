@@ -13,14 +13,15 @@
 
 | 类 | 命名空间 | 用途 |
 | --- | --- | --- |
+| `QbCommand` | Quick.Build | 封装 `SimpleExec` 执行外部命令 / 进程 |
+| `QbConsole` | Quick.Build | 同行刷新输出（进度条效果） |
+| `QbDotNet` | Quick.Build | 裁剪 `publish/runtimes` 下的运行时目录 |
 | `QbFile` | Quick.Build | 文件头改写、安全复制/删除、按行读写文本 |
 | `QbFolder` | Quick.Build | 当前程序目录、递归复制/删除、按通配符搜索 |
+| `QbGui` | Quick.Build | 跨平台打开文件夹（资源管理器 / Finder / xdg-open） |
 | `QbJson` | Quick.Build | 直接读写 JSON 文件里的单个属性，无需定义模型 |
 | `QbNet` | Quick.Build | 浏览器化 `HttpClient`、带进度回调的文件下载 |
-| `QbConsole` | Quick.Build | 同行刷新输出（进度条效果） |
 | `QbSelect` | Quick.Build | 控制台单选 / 多选 / 方向键选择，自动降级重定向场景 |
-| `QbGui` | Quick.Build | 跨平台打开文件夹（资源管理器 / Finder / xdg-open） |
-| `QbDotNet` | Quick.Build | 裁剪 `publish/runtimes` 下的运行时目录 |
 
 ## 安装
 
@@ -28,7 +29,7 @@
 dotnet add package Quick.Build
 ```
 
-唯一的外部依赖是 [SimpleExec](https://github.com/adamralph/simple-exec)（仅 `QbGui` 使用）。
+唯一的外部依赖是 [SimpleExec](https://github.com/adamralph/simple-exec)（供 `QbGui` 与 `QbCommand` 使用）。
 
 ## 快速开始
 
@@ -124,7 +125,7 @@ QbJson.Write("appsettings.json", "Custom", new[] { 1, 2, 3 });
 
 读取侧：`Read<T>` / `ReadString` / `ReadInt32` / `ReadInt64` / `ReadDouble` / `ReadBoolean`。
 写入侧：`Write<T>` / `WriteString` / `WriteInt32` / `WriteInt64` / `WriteDouble` / `WriteBoolean`。
-写入可选传 `JsonSerializerOptions` 控制格式。
+所有写入统一使用静态属性 `DefaultJsonSerializerOptions` 序列化，其默认值为：`WriteIndented=true`（美化缩进）、`DefaultIgnoreCondition=WhenWritingNull`（忽略 null 值）、`Encoder=JavaScriptEncoder.UnsafeRelaxedJsonEscaping`（宽松转义，不转义非 ASCII 字符）。可直接修改该静态属性全局调整写入格式。
 
 ### QbNet —— 下载
 
@@ -134,6 +135,43 @@ QbJson.Write("appsettings.json", "Custom", new[] { 1, 2, 3 });
 | `DownloadFile(url, file, ct, onProgress)` | 32KB 缓冲流式下载，约 0.5s 回调一次进度 |
 | `DownloadFile(client, url, file, ct, onProgress)` | 复用现有 `HttpClient` |
 | `TransferProgress` | `Current` / `Total` / `Speed`(B/s) / `RemainingTime` |
+
+### QbCommand —— 执行外部命令
+
+对 [SimpleExec](https://github.com/adamralph/simple-exec) 的 `Command.Run` 做一层静态封装，参数全部透传。提供两个 `Run` 重载，区别仅在 `args` 的类型：
+
+| 重载 | `args` 类型 | 说明 |
+| --- | --- | --- |
+| `Run(name, args, ...)` | `string` | 以整串字符串传入命令行参数 |
+| `Run(name, args, ...)` | `IEnumerable<string>` | 以参数数组传入，由 SimpleExec 负责转义与拼接 |
+
+其余共用参数（均有默认值）：
+
+| 参数 | 类型 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `name` | `string` | — | 可执行文件 / 命令名 |
+| `workingDirectory` | `string` | `""` | 工作目录，空则用当前目录 |
+| `configureEnvironment` | `Action<IDictionary<string, string>>` | `null` | 注入 / 修改环境变量 |
+| `secrets` | `IEnumerable<string>` | `null` | 回显时掩码处理的敏感片段 |
+| `handleExitCode` | `Func<int, bool>` | `null` | 返回 `false` 时抛 `NonZeroExitCodeException` |
+| `echoPrefix` | `string` | `null` | 回显前缀 |
+| `noEcho` | `bool` | `false` | 为 `true` 时不回显命令与输出 |
+| `cancellationIgnoresProcessTree` | `bool` | `false` | 取消时是否忽略进程树 |
+| `createNoWindow` | `bool` | `false` | 为 `true` 时隐藏新进程窗口 |
+| `ct` | `CancellationToken` | `default` | 取消令牌 |
+
+```csharp
+// 字符串参数
+QbCommand.Run("dotnet", "build -c Release", workingDirectory: "src/MyApp");
+
+// 数组参数（推荐，避免手动拼接与转义）
+QbCommand.Run("git", new[] { "commit", "-m", "feat: bump" }, noEcho: true);
+
+// 自定义环境变量 + 处理非零退出码
+QbCommand.Run("npm", "ci",
+    configureEnvironment: env => env["NODE_ENV"] = "production",
+    handleExitCode: code => code == 0);
+```
 
 ### QbConsole —— 控制台输出
 
@@ -171,21 +209,6 @@ QbDotNet.RemovePublishRuntimes(publishFolder, "win-x86");            // 黑名�
 - `QbFile.WriteLine` 会整文件读入后重写，行尾风格随 `File.WriteAllLines` 归一；需要保留原始换行符时请谨慎使用。
 - `QbFolder.GetAppFolder()` 依赖 `Assembly.GetEntryAssembly()`，在单元测试宿主或自托管场景下可能为 `null`。
 - 编号基准不一致：`InputSelect` 从 **1** 开始显示，`MultiSelect` / `ArrowSelect` 从 **0** 开始。
-
-## 项目结构
-
-```
-Quick.Build.slnx
-├── Quick.Build/          # 类库本体（net8.0），发布到 NuGet
-│   ├── QbFile.cs  QbFolder.cs  QbJson.cs  QbNet.cs
-│   ├── QbConsole.cs  QbSelect.cs  QbGui.cs  QbDotNet.cs
-│   └── Quick.Build.csproj
-└── _build/               # 示例/自测工程（net10.0），以控制台菜单跑通各模块
-    ├── Program.cs
-    └── _build.csproj
-```
-
-`_build` 同时充当 smoke test：菜单里的「输入选择 / 多项选择 / 高亮选择 / 反色选择」四项覆盖了 `QbSelect` 的三条路径与颜色参数，顺带验证 `QbFolder.GetAppFolder()` 的目录定位与 `QbJson` 的键盘输入落盘。
 
 ## License
 
