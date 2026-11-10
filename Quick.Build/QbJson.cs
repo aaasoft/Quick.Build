@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using System.Text.Json;
 using System.Text.Json.Nodes;
 
 namespace Quick.Build
@@ -74,12 +75,13 @@ namespace Quick.Build
         /// <param name="file"></param>
         /// <param name="propertyName"></param>
         /// <param name="value"></param>
-        public static void Write<T>(string file, string propertyName, T value)
+        /// <param name="jsonSerializerOptions"></param>
+        public static void Write<T>(string file, string propertyName, T value, JsonSerializerOptions jsonSerializerOptions = null)
         {
             var content = File.ReadAllText(file);
             var jObj = JsonNode.Parse(content).AsObject();
             jObj[propertyName] = JsonValue.Create(value);
-            var json = jObj.ToString();
+            var json = jObj.ToJsonString(jsonSerializerOptions);
             File.WriteAllText(file, json);
         }
 
