@@ -87,7 +87,7 @@ namespace Quick.Build
             var content = File.ReadAllText(file);
             var jObj = JsonNode.Parse(content).AsObject();
             jObj[propertyName] = JsonValue.Create(value);
-            var json = jObj.ToJsonString(DefaultJsonSerializerOptions);
+            var json = JsonSerializer.Serialize(jObj, DefaultJsonSerializerOptions);
             File.WriteAllText(file, json);
         }
 
